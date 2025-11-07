@@ -69,17 +69,32 @@ const deleteProduct = async (req, res) => {
   res.json({ message: 'Producto eliminado' });
 };
 
+// En productController.js
 const getMyProducts = async (req, res) => {
   try {
-    const products = await Product.find({ createdBy: req.user.id })
+    // LOG PARA DEBUG
+    console.log('getMyProducts llamado');
+    console.log('req.user:', req.user);
+
+    // VERIFICACIÓN CLAVE
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ message: 'No autorizado: usuario no válido' });
+    }
+
+    const products = await Product.find({ createdBy: req.user._id })
       .populate('createdBy', 'name')
       .sort({ createdAt: -1 });
+
+    console.log(`Productos encontrados: ${products.length}`);
     res.json(products);
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener productos' });
+    console.error('Error en getMyProducts:', error.message);
+    res.status(500).json({ 
+      message: 'Error interno',
+      error: error.message 
+    });
   }
 };
-
 module.exports = {
   createProduct,
   getProducts,

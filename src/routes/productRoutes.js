@@ -8,20 +8,21 @@ const {
   getProduct,
   updateProduct,
   deleteProduct,
-  getMyProducts  // ← ¡IMPORTADO!
+  getMyProducts
 } = require('../controllers/productController');
 
-// RUTAS PÚBLICAS Y PROTEGIDAS
-router.route('/')
-  .post(protect, createProduct)
-  .get(getProducts);
+// RUTAS ESPECÍFICAS PRIMERO
+router.get('/my-products', protect, getMyProducts);  // ← PRIMERO
 
+// RUTAS CON :id DESPUÉS
 router.route('/:id')
   .get(getProduct)
   .put(protect, updateProduct)
   .delete(protect, deleteProduct);
 
-// NUEVA RUTA: Mis productos (protegida)
-router.get('/my-products', protect, getMyProducts);
+// RUTAS GENERALES AL FINAL
+router.route('/')
+  .post(protect, createProduct)
+  .get(getProducts);
 
-module.exports = router;  // ← ¡SOLO UN module.exports!
+module.exports = router;
