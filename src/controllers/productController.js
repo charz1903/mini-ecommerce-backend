@@ -69,10 +69,22 @@ const deleteProduct = async (req, res) => {
   res.json({ message: 'Producto eliminado' });
 };
 
+const getMyProducts = async (req, res) => {
+  try {
+    const products = await Product.find({ createdBy: req.user.id })
+      .populate('createdBy', 'name')
+      .sort({ createdAt: -1 });
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener productos' });
+  }
+};
+
 module.exports = {
   createProduct,
   getProducts,
   getProduct,
   updateProduct,
-  deleteProduct
+  deleteProduct,
+  getMyProducts
 };
